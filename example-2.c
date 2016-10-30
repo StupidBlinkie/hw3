@@ -37,7 +37,6 @@ const char* color_files[6] = {"images/blue.png", "images/green.png", "images/ora
 static void set_row(GtkWidget *widget, gpointer  data) {
    selected_row = (int) data;
 }
-
 // connected to each candy to set col. printf is not necessary, but helpful for now
 static void set_col(GtkWidget *widget, gpointer  data) {
    selected_col = (int) data;
@@ -50,6 +49,7 @@ static void set_col(GtkWidget *widget, gpointer  data) {
 static void swap_buttons(int new_row, int new_col) {
    printf("%d, %d\n", selected_row, selected_col);
    printf("%d, %d\n", new_row, new_col);
+
 
    // get the indexes for the candies in temp_data
    int selected_index = selected_row * 10 + selected_col;
@@ -67,23 +67,25 @@ static void swap_buttons(int new_row, int new_col) {
    temp_data[new_index] = selected_image;
    
    // destroy previous pictures
-   gtk_widget_destroy(gtk_grid_get_child_at(GTK_GRID (grid), selected_col + 1, selected_row )); //col 0 is the buttons column
-   gtk_widget_destroy(gtk_grid_get_child_at(GTK_GRID (grid), new_col + 1, new_row));
+   gtk_widget_destroy(gtk_grid_get_child_at(GTK_GRID (grid), selected_col, selected_row));
+   gtk_widget_destroy(gtk_grid_get_child_at(GTK_GRID (grid), new_col, new_row));
 
    // set up new buttons and attatch them
    GtkWidget *button = gtk_button_new_with_label (NULL);
    gtk_button_set_image(button, gtk_image_new_from_file (color_files[selected_image]));
+   gtk_button_set_relief (button, GTK_RELIEF_NONE);
    g_signal_connect (button, "clicked", G_CALLBACK (set_row), (gpointer) new_row);
    g_signal_connect (button, "clicked", G_CALLBACK (set_col), (gpointer) new_col);
    
-   gtk_grid_attach (GTK_GRID (grid), button, 1+new_col, new_row, 1, 1);
+   gtk_grid_attach (GTK_GRID (grid), button, new_col, new_row, 1, 1);
    
    button = gtk_button_new_with_label (NULL);
    gtk_button_set_image(button, gtk_image_new_from_file (color_files[new_image]));
+   gtk_button_set_relief (button, GTK_RELIEF_NONE);
    g_signal_connect (button, "clicked", G_CALLBACK (set_row), (gpointer) selected_row);
    g_signal_connect (button, "clicked", G_CALLBACK (set_col), (gpointer) selected_col);
    
-   gtk_grid_attach (GTK_GRID (grid), button, 1+selected_col, selected_row, 1, 1);
+   gtk_grid_attach (GTK_GRID (grid), button, selected_col, selected_row, 1, 1);
    
    // This makes new buttons appear
    gtk_widget_show_all (window);
@@ -128,7 +130,7 @@ static void swap_left(GtkWidget *widget, gpointer  data){
 static void swap_right(GtkWidget *widget, gpointer  data){
   if (selected_candy_bool) {
       if (selected_col != 9) {
-         g_print ("clikced left\n");
+         g_print ("clikced right\n");
          swap_buttons(selected_row, selected_col + 1);
 
          selected_candy_bool = 0;
@@ -142,7 +144,7 @@ static void activate (GtkApplication *app, gpointer user_data) {
 //   GtkWidget *grid;
    GtkWidget *button;
    // GtkWidget *image[100];
-   GtkWidget *   gtk_image_new_from_file ();
+   //GtkWidget *   gtk_image_new_from_file ();
 
 
    /* create a new window, and set its title */
@@ -161,14 +163,15 @@ static void activate (GtkApplication *app, gpointer user_data) {
    int count = 0;
    for (int row = 0; row < 10; row++) {
       for (int column = 0; column < 10; column++){
-         button = gtk_button_new_with_label (NULL);
+         button = gtk_toggle_button_new(); //use toggle button for button style
           // This code should be used once we can open files (int) *(arr->storage + arr->col * row + column)]));
          gtk_button_set_image(button, gtk_image_new_from_file (color_files[count % 6])); 
+         gtk_button_set_relief (button, GTK_RELIEF_NONE); //button style
          temp_data[count] = count% 6;
          g_signal_connect (button, "clicked", G_CALLBACK (set_row), (gpointer) row);
          g_signal_connect (button, "clicked", G_CALLBACK (set_col), (gpointer) column);
 
-         gtk_grid_attach (GTK_GRID (grid), button, 1+column, row, 1, 1);
+         gtk_grid_attach (GTK_GRID (grid), button, column, row, 1, 1);
          count++;
       }
    }
@@ -180,27 +183,27 @@ static void activate (GtkApplication *app, gpointer user_data) {
    button = gtk_button_new_with_label (NULL);
    gtk_button_set_image(button, gtk_image_new_from_file ("images/up.png"));
    g_signal_connect (button, "clicked", G_CALLBACK (swap_up), NULL);
-   gtk_grid_attach (GTK_GRID (grid), button, 0, 0, 1, 1);
+   gtk_grid_attach (GTK_GRID (grid), button, 10, 0, 1, 1);
 
    button = gtk_button_new_with_label (NULL);
    gtk_button_set_image(button, gtk_image_new_from_file ("images/down.png"));
    g_signal_connect (button, "clicked", G_CALLBACK (swap_down), NULL);
-   gtk_grid_attach (GTK_GRID (grid), button, 0, 1, 1, 1);
+   gtk_grid_attach (GTK_GRID (grid), button, 10, 1, 1, 1);
 
    button = gtk_button_new_with_label (NULL);
    gtk_button_set_image(button, gtk_image_new_from_file ("images/left.png"));
    g_signal_connect (button, "clicked", G_CALLBACK (swap_left), NULL);
-   gtk_grid_attach (GTK_GRID (grid), button, 0, 2, 1, 1);
+   gtk_grid_attach (GTK_GRID (grid), button, 10, 2, 1, 1);
 
    button = gtk_button_new_with_label (NULL);
    gtk_button_set_image(button, gtk_image_new_from_file ("images/right.png"));
    g_signal_connect (button, "clicked", G_CALLBACK (swap_right), NULL);
-   gtk_grid_attach (GTK_GRID (grid), button, 0, 3, 1, 1);
+   gtk_grid_attach (GTK_GRID (grid), button, 10, 3, 1, 1);
 
 
    button = gtk_button_new_with_label ("Quit");
    g_signal_connect_swapped (button, "clicked", G_CALLBACK (gtk_widget_destroy), window);
-   gtk_grid_attach (GTK_GRID (grid), button, 0, 4, 1, 1);
+   gtk_grid_attach (GTK_GRID (grid), button, 10, 4, 1, 1);
 
 
   /* Now that we are done packing our widgets, we show them all
@@ -265,3 +268,7 @@ int main (int argc, char **argv) {
 
    return status;
 }
+
+//try to read file from command line arg
+// app = gtk_application_new ("org.gtk.example", G_APPLICATION_HANDLES_COMMAND_LINE);
+// g_application_add_main_option_entries (app, argv[1]);
