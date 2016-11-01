@@ -1,10 +1,6 @@
 #include "hw3.h"
 
 
-extern GtkWidget *grid;
-extern GtkWidget *window;
-
-
 int *data_from_json;  //remeber to free it. on exit?
 Array2dPtr arr;
 int selected_row;

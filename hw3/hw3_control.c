@@ -55,6 +55,7 @@ void swap_up(GtkWidget *widget, gpointer  data){
          swap_buttons(selected_row - 1, selected_col);
          selected_candy_bool = 0;
          moves_left--;
+         view_update_moves_label();
       }
       else{
          //unselect the button if can;t be swapped
@@ -77,6 +78,7 @@ void swap_down(GtkWidget *widget, gpointer  data){
          swap_buttons(selected_row + 1, selected_col);
          selected_candy_bool = 0;
          moves_left--;
+         view_update_moves_label();
       }
       else{
          gtk_toggle_button_set_active 
@@ -98,6 +100,7 @@ void swap_left(GtkWidget *widget, gpointer  data){
          swap_buttons(selected_row, selected_col - 1);
          selected_candy_bool = 0;
          moves_left--;
+         view_update_moves_label();
       }
       else{
          gtk_toggle_button_set_active 
@@ -119,6 +122,7 @@ void swap_right(GtkWidget *widget, gpointer  data){
          swap_buttons(selected_row, selected_col + 1);
          selected_candy_bool = 0;
          moves_left--;
+         view_update_moves_label();
       }
       else{
          gtk_toggle_button_set_active 

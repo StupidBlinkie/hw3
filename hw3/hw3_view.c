@@ -5,14 +5,14 @@
 
 extern Array2dPtr arr;
 extern const char* color_files[6];  //cant just say color_files..cause seg fault
-extern int selected_row;
-extern int selected_col;
+// extern int selected_row;
+// extern int selected_col;
 extern int moves_left;
 
 
 GtkWidget *grid;
 GtkWidget *window;
-GtkWidget *label;
+GtkWidget *moves_label;
 
 //print out borad in color numbers
 // void printSummary(){
@@ -85,13 +85,11 @@ void activate (GtkApplication *app, gpointer user_data) {
    gtk_grid_attach (GTK_GRID (grid), button, 10, 4, 1, 1);
 
 
-   // char buffer[20], text[20];
-   // strcpy(text, "moves left: ");
-   // itoa(moves_left, buffer);
-   // strcat(text, buffer);
-   // GtkWidget *label;
-   // label = gtk_label_new (text);
-   // gtk_grid_attach (GTK_GRID (grid), label, 10, 5, 1, 1);
+   //generate label string and create label
+   
+   moves_label = gtk_label_new (NULL);
+   view_update_moves_label();
+   gtk_grid_attach (GTK_GRID (grid), moves_label, 10, 5, 1, 1);
 
    gtk_widget_show_all (window);
 }
@@ -105,7 +103,7 @@ void view_destroy_candy(int row, int col){
 }
 
 void view_create_candy(int candy, int row, int col){
-   GtkWidget *button = gtk_button_new_with_label (NULL);
+   GtkWidget *button = gtk_toggle_button_new();
    gtk_button_set_image(button, gtk_image_new_from_file (color_files[candy]));
    gtk_button_set_relief (button, GTK_RELIEF_NONE);
    g_signal_connect (button, "clicked", G_CALLBACK (set_row), (gpointer) row);
@@ -115,6 +113,16 @@ void view_create_candy(int candy, int row, int col){
    gtk_widget_show_all (window);
 }
 
+void view_update_moves_label(){
+   gchar *label_moves_left;
+   label_moves_left = g_strdup_printf("%d", moves_left);
+   gchar *label_text;
+   label_text = g_strdup_printf("moves left: ");
+   strcat (label_text, label_moves_left);
+   //set new text
+   gtk_label_set_text (moves_label, label_text);
+
+}
 
 
 int main (int argc, char **argv) {
